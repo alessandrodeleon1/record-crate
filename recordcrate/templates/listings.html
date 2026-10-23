@@ -3,14 +3,39 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-  <h1>Listings</h1>
-  <!--
-    each block here the art cover of a release -> smtg else to add to database
-        can just list names instead
-    | [ ] [ ] [ ]   |
-    | [ ] [ ] [ ]   |
-    | [ ] [ ] [ ]   |
+<section class="listings-header">
+  <h1>All listings</h1>
 
+  <form method="get" action="{% url 'recordcrate:listings' %}" class="listings-filters">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search artists, titles, labels...">
+    <select name="genre">
+      <option value="">All genres</option>
+      {% for genre in genres %}
+        <option value="{{ genre }}" {% if genre == selected_genre %}selected{% endif %}>{{ genre }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Apply</button>
+    {% if query or selected_genre %}
+      <a href="{% url 'recordcrate:listings' %}">Clear</a>
+    {% endif %}
+  </form>
 
-  -->
+  <p class="result-count">{{ items|length }} result{{ items|length|pluralize }}</p>
+</section>
+
+<div class="listings-grid">
+  {% for item in items %}
+    <a class="listing-card" href="{% url 'recordcrate:item_detail' item.item_id %}">
+      <h2>{{ item.release_id.title }}</h2>
+      <p class="artist">{{ item.release_id.artist|default:"Unknown artist" }}</p>
+      <p class="meta">
+        {{ item.physical_format }}
+        &middot; {{ item.release_id.year|default:"—" }}
+        &middot; {{ item.release_id.label|default:"No label" }}
+      </p>
+    </a>
+  {% empty %}
+    <p class="empty">No listings found.</p>
+  {% endfor %}
+</div>
 {% endblock %}

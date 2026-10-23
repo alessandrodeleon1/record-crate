@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="{% url 'recordcrate:homepage' %}">Home</a> &rsaquo;
+  <span>Collection of User #{{ profile_user.user_id }}</span>
+</nav>
+
+<section class="collection">
+  <h1>Collection of User #{{ profile_user.user_id }}</h1>
+  <p class="result-count">{{ owned|length }} item{{ owned|length|pluralize }}</p>
+
+  {% if owned %}
+    <div class="listings-grid">
+      {% for entry in owned %}
+        <a class="listing-card" href="{% url 'recordcrate:item_detail' entry.item_id.item_id %}">
+          <h2>{{ entry.item_id.release_id.title }}</h2>
+          <p class="artist">{{ entry.item_id.release_id.artist|default:"Unknown artist" }}</p>
+          <p class="meta">{{ entry.item_id.physical_format }}</p>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty">This collection is empty.</p>
+  {% endif %}
+</section>
+{% endblock %}

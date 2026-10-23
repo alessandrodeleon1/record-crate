@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="{% url 'recordcrate:homepage' %}">Home</a> &rsaquo;
+  <a href="{% url 'recordcrate:listings' %}">Listings</a> &rsaquo;
+  <span>{{ item.release_id.title }}</span>
+</nav>
+
+<article class="item-detail">
+  <header class="item-header">
+    <h1>{{ item.release_id.title }}</h1>
+    <p class="artist">
+      {% if item.release_id.artist %}
+        <a href="{% url 'recordcrate:artist_releases' item.release_id.artist %}">{{ item.release_id.artist }}</a>
+      {% else %}
+        Unknown artist
+      {% endif %}
+    </p>
+  </header>
+
+  <dl class="item-meta">
+    <div>
+      <dt>Format</dt>
+      <dd>{{ item.physical_format }}</dd>
+    </div>
+    <div>
+      <dt>Year</dt>
+      <dd>{{ item.release_id.year|default:"Unknown" }}</dd>
+    </div>
+    <div>
+      <dt>Label</dt>
+      <dd>{{ item.release_id.label|default:"Unknown" }}</dd>
+    </div>
+    <div>
+      <dt>Genre</dt>
+      <dd>{{ item.release_id.genre|default:"Unknown" }}</dd>
+    </div>
+  </dl>
+
+  <p class="release-link">
+    <a href="{% url 'recordcrate:release_detail' item.release_id.release_id %}">View all copies of this release</a>
+  </p>
+
+  <section class="owners">
+    <h2>Owned by</h2>
+    {% if owners %}
+      <ul>
+        {% for owner in owners %}
+          <li>
+            <a href="{% url 'recordcrate:user_collection' owner.user_id.user_id %}">
+              User #{{ owner.user_id.user_id }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No owners recorded for this copy.</p>
+    {% endif %}
+  </section>
+</article>
+{% endblock %}

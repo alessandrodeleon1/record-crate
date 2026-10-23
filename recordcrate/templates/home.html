@@ -3,5 +3,47 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-  <h1>Welcome to recordcrate =)</h1>
-{% endblock %}
+<section class="home-search">
+  <div class="search-row">
+    <form method="get" action="{% url 'recordcrate:listings' %}">
+      <input type="text" name="q" placeholder="Search artists, titles, labels...">
+      <button type="submit">Go</button>
+    </form>
+    <a class="random-button" href="{% url 'recordcrate:random_release' %}">Random</a>
+  </div>
+</section>
+
+<h1>Welcome to recordcrate =)</h1>
+
+<div class="home-columns">
+  <section class="recent">
+    <h2>Recently added</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Artist</th>
+          <th>Format</th>
+          <th>Year</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in recent_items %}
+        <tr>
+          <td>
+            <a href="{% url 'recordcrate:item_detail' item.item_id %}">
+              {{ item.release_id.title }}
+            </a>
+          </td>
+          <td>{{ item.release_id.artist|default:"Unknown" }}</td>
+          <td>{{ item.physical_format }}</td>
+          <td>{{ item.release_id.year|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">Nothing listed yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+{% endblock %}}

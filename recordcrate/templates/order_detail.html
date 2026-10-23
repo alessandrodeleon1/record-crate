@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="{% url 'recordcrate:homepage' %}">Home</a> &rsaquo;
+  <span>Orders of User #{{ profile_user.user_id }}</span>
+</nav>
+
+<section class="orders">
+  <h1>Orders of User #{{ profile_user.user_id }}</h1>
+
+  <h2>Placed by this user</h2>
+  {% if placed_orders %}
+    <table>
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Status</th>
+          <th>Shipping address</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in placed_orders %}
+        <tr>
+          <td><a href="{% url 'recordcrate:order_detail' order.order_id %}">#{{ order.order_id }}</a></td>
+          <td>{{ order.shipping_status }}</td>
+          <td>{{ order.shipping_address }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">No placed orders.</p>
+  {% endif %}
+
+  <h2>Received by this user</h2>
+  {% if received_orders %}
+    <table>
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Status</th>
+          <th>Shipping address</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in received_orders %}
+        <tr>
+          <td><a href="{% url 'recordcrate:order_detail' order.order_id %}">#{{ order.order_id }}</a></td>
+          <td>{{ order.shipping_status }}</td>
+          <td>{{ order.shipping_address }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">No received orders.</p>
+  {% endif %}
+</section>
+{% endblock %}

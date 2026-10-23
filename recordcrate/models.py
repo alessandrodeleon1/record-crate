@@ -13,88 +13,98 @@ class Orders(models.Model):
     shipping_address = models.CharField(max_length=50)
     shipping_status = models.CharField(max_length=50)
     placed_by_user_id = models.ForeignKey(
-        'User',
-        related_name = "placed_order",
-        db_column = "placed_by_user_id",
-        on_delete = models.SET_NULL,
-        blank = True, null = True)
+        "User",
+        related_name="placed_order",
+        db_column="placed_by_user_id",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
     received_by_user_id = models.ForeignKey(
-        'User',
-        related_name = "received_order",
-        db_column = "received_by_user_id",
-        on_delete = models.SET_NULL,
-        blank = True, null = True)
+        "User",
+        related_name="received_order",
+        db_column="received_by_user_id",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         managed = True
-        db_table = 'Orders'
+        db_table = "Orders"
 
 
 class Order_Item(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     order_id = models.ForeignKey(
-        'Orders',
-        db_column = "order_id",
-        on_delete = models.CASCADE, # delete order item if order no longer exists
-        blank = False
+        "Orders",
+        db_column="order_id",
+        on_delete=models.CASCADE,  # delete order item if order no longer exists
+        blank=False,
     )
     item_id = models.ForeignKey(
-        'Item',
-        db_column = "item_id",
-        on_delete = models.CASCADE, # no longer exists in database, can't be sold
-        blank = False
+        "Item",
+        db_column="item_id",
+        on_delete=models.CASCADE,  # no longer exists in database, can't be sold
+        blank=False,
     )
 
     class Meta:
         managed = True
-        db_table = 'Order_Item'
+        db_table = "Order_Item"
 
 
 class Owns(models.Model):
     user_id = models.ForeignKey(
-        'User',
-        db_column = "user_id",
-        on_delete = models.CASCADE, # no users exists to own
-        blank = True, null = True
+        "User",
+        db_column="user_id",
+        on_delete=models.CASCADE,  # no users exists to own
+        blank=True,
+        null=True,
     )
     item_id = models.ForeignKey(
-        'Item',
-        db_column = "item_id",
-        on_delete = models.CASCADE,
-        blank = True, null = True
+        "Item", db_column="item_id", on_delete=models.CASCADE, blank=True, null=True
     )
 
     class Meta:
         managed = True
-        db_table = 'Owns'
+        db_table = "Owns"
+
 
 class Release(models.Model):
     release_id = models.AutoField(primary_key=True, blank=False)
     title = models.CharField(max_length=20, blank=False)
-    genre = models.CharField(max_length=20, blank=True, null=True) # genre may be unkown - niche release
-    year = models.PositiveIntegerField(blank=True, null=True) # year may be unkown
-    media_format = models.CharField(max_length=20, blank=True, null=True) # format may not be certain
-    artist = models.CharField(max_length=30, blank=True, null=True) # artist may be unknown
+    genre = models.CharField(
+        max_length=20, blank=True, null=True
+    )  # genre may be unkown - niche release
+    year = models.PositiveIntegerField(blank=True, null=True)  # year may be unkown
+    media_format = models.CharField(
+        max_length=20, blank=True, null=True
+    )  # format may not be certain
+    artist = models.CharField(
+        max_length=30, blank=True, null=True
+    )  # artist may be unknown
     label = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
-        managed= True
-        db_table = 'Release'
+        managed = True
+        db_table = "Release"
 
 
 class Item(models.Model):
     item_id = models.AutoField(primary_key=True, blank=False)
     physical_format = models.CharField(max_length=20, blank=False)
     release_id = models.ForeignKey(
-        'Release',
-        db_column = "release_id",
-        on_delete = models.SET_NULL,
-        blank=False, null=True
+        "Release",
+        db_column="release_id",
+        on_delete=models.SET_NULL,
+        blank=False,
+        null=True,
     )
 
     class Meta:
         managed = True
-        db_table = 'Item'
+        db_table = "Item"
 
 
 class User(models.Model):
@@ -104,7 +114,7 @@ class User(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'User'
+        db_table = "User"
 
 
 class AuthGroup(models.Model):
@@ -112,29 +122,29 @@ class AuthGroup(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'auth_group'
+        db_table = "auth_group"
 
 
 class AuthGroupPermissions(models.Model):
     id = models.BigAutoField(primary_key=True)
     group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
+    permission = models.ForeignKey("AuthPermission", models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'auth_group_permissions'
-        unique_together = (('group', 'permission'),)
+        db_table = "auth_group_permissions"
+        unique_together = (("group", "permission"),)
 
 
 class AuthPermission(models.Model):
     name = models.CharField(max_length=255)
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
+    content_type = models.ForeignKey("DjangoContentType", models.DO_NOTHING)
     codename = models.CharField(max_length=100)
 
     class Meta:
         managed = False
-        db_table = 'auth_permission'
-        unique_together = (('content_type', 'codename'),)
+        db_table = "auth_permission"
+        unique_together = (("content_type", "codename"),)
 
 
 class AuthUser(models.Model):
@@ -151,7 +161,7 @@ class AuthUser(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'auth_user'
+        db_table = "auth_user"
 
 
 class AuthUserGroups(models.Model):
@@ -161,8 +171,8 @@ class AuthUserGroups(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'auth_user_groups'
-        unique_together = (('user', 'group'),)
+        db_table = "auth_user_groups"
+        unique_together = (("user", "group"),)
 
 
 class AuthUserUserPermissions(models.Model):
@@ -172,8 +182,8 @@ class AuthUserUserPermissions(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'auth_user_user_permissions'
-        unique_together = (('user', 'permission'),)
+        db_table = "auth_user_user_permissions"
+        unique_together = (("user", "permission"),)
 
 
 class DjangoAdminLog(models.Model):
@@ -182,12 +192,14 @@ class DjangoAdminLog(models.Model):
     object_repr = models.CharField(max_length=200)
     action_flag = models.PositiveSmallIntegerField()
     change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    content_type = models.ForeignKey(
+        "DjangoContentType", models.DO_NOTHING, blank=True, null=True
+    )
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'django_admin_log'
+        db_table = "django_admin_log"
 
 
 class DjangoContentType(models.Model):
@@ -196,8 +208,8 @@ class DjangoContentType(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'django_content_type'
-        unique_together = (('app_label', 'model'),)
+        db_table = "django_content_type"
+        unique_together = (("app_label", "model"),)
 
 
 class DjangoMigrations(models.Model):
@@ -208,7 +220,7 @@ class DjangoMigrations(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'django_migrations'
+        db_table = "django_migrations"
 
 
 class DjangoSession(models.Model):
@@ -218,4 +230,4 @@ class DjangoSession(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'django_session'
+        db_table = "django_session"
