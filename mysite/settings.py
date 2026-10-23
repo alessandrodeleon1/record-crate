@@ -25,7 +25,15 @@ SECRET_KEY = "django-insecure-5(sk0##@g-&4br4=y79ep)sna3ds=h&$ijrc8%!q^k)$%t8(j(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+# if doing remote, run
+#   python manage.py runserver 0.0.0.0:8000
+# and go to http://100.82.229.113:8000/
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "100.82.229.113",   # prong's tailscale ip
+]
 
 
 # Application definition

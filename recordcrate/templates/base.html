@@ -4,6 +4,21 @@
   <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
+
+    <header>
+        {% block nav %}
+        <nav>
+            <ul>
+                <li><a href="{% url 'recordcrate:homepage' %}">RecordCrate</a></li>
+                <li><a href="{% url 'recordcrate:listings' %}">Listings</a></li>
+                # todo: add more links
+            </ul>
+        </nav>
+        {% endblock nav %}
+    </header>
+
+
+
   <div id="content">
     {% block content %}
     {% endblock %}

@@ -6,4 +6,5 @@ app_name = "recordcrate"
 
 urlpatterns = [
     path("", views.index, name="homepage"),
+    path("listings/", views.listings, name='listings'),
 ]

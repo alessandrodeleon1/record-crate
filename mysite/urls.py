@@ -15,10 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from argparse import Namespace
+
 from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("index/", include("recordcrate.urls", namespace="recordcrate")),
+    path("", include("recordcrate.urls", namespace="recordcrate")),
 ]
