@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from recordcrate.forms import CustomUserCreationForm
 
-from recordcrate.models import Release, Item, Owns, Order_Item, Orders, User
+from recordcrate.models import Release, Item, Owns, Order_Item, Orders, AuthUser
 
 
 # Create your views here.
@@ -77,14 +77,14 @@ def artist_releases(request, artist):
 
 @login_required(login_url="recordcrate:login")
 def user_collection(request, user_id):
-    user = get_object_or_404(User, pk=user_id)
+    user = get_object_or_404(AuthUser, pk=user_id)
     owned = Owns.objects.filter(user_id=user).select_related("item_id__release_id")
     return render(request, "collection.html", {"profile_user": user, "owned": owned})
 
 
 @login_required(login_url="recordcrate:login")
 def order_list(request, user_id):
-    user = get_object_or_404(User, pk=user_id)
+    user = get_object_or_404(AuthUser, pk=user_id)
     placed = Orders.objects.filter(placed_by_user_id=user).prefetch_related(
         "order_item_set__item_id__release_id"
     )
@@ -126,18 +126,39 @@ def random_release(request):
         return redirect("recordcrate:listings")
     return redirect("recordcrate:release_detail", release_id=release.release_id)
 
+# user folder
 @login_required(login_url="recordcrate:login")
-def profile(request):
-    return render(request, "user/profile.html")
+def profile(request, user_id):
+    current_user = get_object_or_404(AuthUser, pk=user_id)
+    return render(request, "user/profile.html", {"current_user":current_user})
+
+def create_release(request):
+    return redirect(request, "create_release.html")
+
+def my_collection(request, user_id):
+    current_user = get_object_or_404(AuthUser,pk=user_id)
+    return render(request, "user/collection.html", {"current_user":current_user})
+
+def my_listings(request, user_id):
+    current_user = get_object_or_404(AuthUser,pk=user_id)
+    return render(request, "user/active_listings.html", {"current_user":current_user})
 
 
-# User Authentication
+# User Authentication ###############3
 def register(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            login(request, form.save())
-            return redirect("recordcrate:user_profile")
+            django_user = form.save()
+
+            User.objects.create(
+                user_id=django_user,
+                city = form.cleaned_data.get('city'),
+                address =form.cleaned_data.get('address'),
+            )
+
+            login(request, django_user)
+            return redirect("recordcrate:user_profile", user_id=django_user.profile.user_id)
     else:
         form = CustomUserCreationForm()
     return render(request, 'authenticate/register.html', {"form": form})
@@ -156,3 +177,4 @@ def logout_view(request):
     if request.method == "POST":
         logout(request)
         return redirect("recordcrate:homepage")
+########################

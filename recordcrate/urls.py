@@ -20,6 +20,10 @@ urlpatterns = [
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
 
-    # path("profile/", views.profile, name="user_profile"),
-    path("profile/", views.profile, name="user_profile"),
+    # user
+    path("profile/<int:user_id>/", views.profile, name="user_profile"),
+    path("profile/<int:user_id>/collection/", views.my_collection, name="my_collection"),
+    path("profile/<int:user_id>/active-listings", views.my_listings, name="my_listings"),
+
+
 ]

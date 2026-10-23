@@ -6,14 +6,13 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-from django.contrib.auth.models import User as DjangoUser
 
 class Orders(models.Model):
     order_id = models.AutoField(primary_key=True, blank=False)
     shipping_address = models.CharField(max_length=50)
     shipping_status = models.CharField(max_length=50)
     placed_by_user_id = models.ForeignKey(
-        "User",
+        "AuthUser",
         related_name="placed_order",
         db_column="placed_by_user_id",
         on_delete=models.SET_NULL,
@@ -21,7 +20,7 @@ class Orders(models.Model):
         null=True,
     )
     received_by_user_id = models.ForeignKey(
-        "User",
+        "AuthUser",
         related_name="received_order",
         db_column="received_by_user_id",
         on_delete=models.SET_NULL,
@@ -56,8 +55,8 @@ class Order_Item(models.Model):
 
 class Owns(models.Model):
     user_id = models.ForeignKey(
-        "User",
-        db_column="user_id",
+        "AuthUser",
+        db_column="user.id",
         on_delete=models.CASCADE,  # no users exists to own
         blank=True,
         null=True,
@@ -107,18 +106,25 @@ class Item(models.Model):
         db_table = "Item"
 
 
-class User(models.Model):
-    user_id = models.AutoField(primary_key=True)
-    # store credentials in django auth_user
-    account = models.OneToOneField(DjangoUser,
-        on_delete=models.CASCADE,
-        related_name="profile")
-    city = models.CharField(max_length=20, blank=True, null=True)
-    address = models.CharField(max_length=50, blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = "User"
+# class User(models.Model):
+#     # user_id = models.AutoField(primary_key=True)
+#     # # store credentials in django auth_user
+#     # account = models.OneToOneField(DjangoUser,
+#     #     on_delete=models.CASCADE,
+#     #     related_name="profile")
+#
+#     user_id = models.OneToOneField(DjangoUser,
+#         on_delete=models.CASCADE,
+#         related_name="account",
+#         primary_key=True,
+#     )
+#
+#     city = models.CharField(max_length=20, blank=True, null=True)
+#     address = models.CharField(max_length=50, blank=True, null=True)
+#
+#     class Meta:
+#         managed = True
+#         db_table = "User"
 
 
 class AuthGroup(models.Model):
@@ -141,7 +147,7 @@ class AuthGroupPermissions(models.Model):
 
 
 class AuthPermission(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, primary_key=True)
     content_type = models.ForeignKey("DjangoContentType", models.DO_NOTHING)
     codename = models.CharField(max_length=100)
 

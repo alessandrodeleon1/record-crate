@@ -4,13 +4,11 @@
 
 
 {% block content %}
-<head>
-    <nav>
+    <nav class="profilebar">
        <ul>
            <li><a href="activelistings.html">Active Listings</a></li>
-           <li><a href="collectoin.html">Collection</a></li>
+           <li><a href="{% url 'recordcrate:my_collection' current_user.pk %}">Collection</a></li>
        </ul>
     </nav>
-</head>
-<h1>this is your profile</h1>
+<h1>{{current_user.username}}'s profile</h1>
 {% endblock %}
