@@ -6,7 +6,7 @@
     <h1>Register as a user</h1>
     <form action="{% url 'recordcrate:register' %}" method="POST">
         {% csrf_token %}
-        {{ form }}
+        {{ form.as_p }}
         <button type="submit">Submit</button>
     </form>
 {% endblock %}
