@@ -15,7 +15,7 @@ recordcrate.com
 **Detailed design: 45 points**
 
 - DataStore: database design
-	-[ ] Mentioned and referenced Project Part A - database design: 5
+	- [ ] Mentioned and referenced Project Part A - database design: 5
 
 - Application program design: functions sets and descriptions of function: 20
 	- [ ] sufficient function sets and sufficient descriptions of functions in each set
