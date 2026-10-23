@@ -1,23 +1,23 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
   <title>{% block title %}{% endblock %}</title>
+  <link href="{% static 'css/recordcrate.css' %}" rel="stylesheet">
 </head>
 <body>
 
     <header>
         {% block nav %}
-        <nav>
+        <nav id="navbar">
             <ul>
                 <li><a href="{% url 'recordcrate:homepage' %}">RecordCrate</a></li>
                 <li><a href="{% url 'recordcrate:listings' %}">Listings</a></li>
-                # todo: add more links
-            </ul>
+				<!--- TODO: needs more links--!>
+			</ul>
         </nav>
         {% endblock nav %}
     </header>
-
-
 
   <div id="content">
     {% block content %}

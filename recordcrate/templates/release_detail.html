@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="{% url 'recordcrate:homepage' %}">Home</a> &rsaquo;
+  <a href="{% url 'recordcrate:listings' %}">Listings</a> &rsaquo;
+  <span>{{ release.title }}</span>
+</nav>
+
+<article class="release-detail">
+  <header>
+    <h1>{{ release.title }}</h1>
+    <p class="artist">
+      {% if release.artist %}
+        <a href="{% url 'recordcrate:artist_releases' release.artist %}">{{ release.artist }}</a>
+      {% else %}
+        Unknown artist
+      {% endif %}
+    </p>
+  </header>
+
+  <dl class="item-meta">
+    <div>
+      <dt>Year</dt>
+      <dd>{{ release.year|default:"Unknown" }}</dd>
+    </div>
+    <div>
+      <dt>Label</dt>
+      <dd>{{ release.label|default:"Unknown" }}</dd>
+    </div>
+    <div>
+      <dt>Genre</dt>
+      <dd>{{ release.genre|default:"Unknown" }}</dd>
+    </div>
+  </dl>
+
+  <section>
+    <h2>Copies</h2>
+    {% if copies %}
+      <table>
+        <thead>
+          <tr>
+            <th>Format</th>
+            <th>View</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for copy in copies %}
+          <tr>
+            <td>{{ copy.physical_format }}</td>
+            <td><a href="{% url 'recordcrate:item_detail' copy.item_id %}">Details</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No copies listed for this release.</p>
+    {% endif %}
+  </section>
+</article>
+{% endblock %}

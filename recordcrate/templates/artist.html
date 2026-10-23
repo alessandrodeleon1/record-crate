@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="{% url 'recordcrate:homepage' %}">Home</a> &rsaquo;
+  <a href="{% url 'recordcrate:listings' %}">Listings</a> &rsaquo;
+  <span>{{ artist }}</span>
+</nav>
+
+<section class="artist-page">
+  <h1>{{ artist }}</h1>
+  <p class="result-count">{{ releases|length }} release{{ releases|length|pluralize }}</p>
+
+  {% if releases %}
+    <ul class="artist-releases">
+      {% for release in releases %}
+        <li>
+          <a href="{% url 'recordcrate:release_detail' release.release_id %}">{{ release.title }}</a>
+          <span class="meta">
+            {{ release.year|default:"—" }}
+            &middot; {{ release.label|default:"No label" }}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">No releases found for this artist.</p>
+  {% endif %}
+</section>
+{% endblock %}
