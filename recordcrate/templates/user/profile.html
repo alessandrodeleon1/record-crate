@@ -1,12 +1,16 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+
+{% block content %}
 <head>
-  <title>{% block title %}{% endblock %}</title>
+    <nav>
+       <ul>
+           <li><a href="activelistings.html">Active Listings</a></li>
+           <li><a href="collectoin.html">Collection</a></li>
+       </ul>
+    </nav>
 </head>
-<body>
-  <div id="content">
-    {% block content %}
-    {% endblock %}
-  </div>
-</body>
-</html>
+<h1>this is your profile</h1>
+{% endblock %}

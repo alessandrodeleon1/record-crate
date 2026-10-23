@@ -16,4 +16,10 @@ urlpatterns = [
     ),
     path("users/<int:user_id>/orders/", views.order_list, name="order_list"),
     path("orders/<int:order_id>/", views.order_detail, name="order_detail"),
+    path("register/", views.register, name="register"),
+    path("login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
+
+    # path("profile/", views.profile, name="user_profile"),
+    path("profile/", views.profile, name="user_profile"),
 ]

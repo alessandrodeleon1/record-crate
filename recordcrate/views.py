@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.db.models import Q
 from django.db.models import Count
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import login, logout
 
 from recordcrate.models import Release, Item, Owns, Order_Item, Orders, User
 
@@ -122,3 +124,34 @@ def random_release(request):
     if release is None:
         return redirect("recordcrate:listings")
     return redirect("recordcrate:release_detail", release_id=release.release_id)
+
+@login_required(login_url="recordcrate:login")
+def profile(request):
+    return render(request, "user/profile.html")
+
+
+# User Authentication
+def register(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            login(request, form.save())
+            return redirect("recordcrate:user_profile")
+    else:
+        form = UserCreationForm()
+    return render(request, 'authenticate/register.html', {"form": form})
+
+def login_view(request):
+    if request.method == "POST":
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            return redirect("recordcrate:login")
+    else:
+        form = AuthenticationForm()
+    return render(request, 'authenticate/login.html', {"form": form})
+
+def logout_view(request):
+    if request.method == "POST":
+        logout(request)
+        return redirect("recordcrate:homepage")
