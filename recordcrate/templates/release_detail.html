@@ -58,4 +58,12 @@
     {% endif %}
   </section>
 </article>
+
+<h2>Own a copy of this release?</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="physical_format">Physical format of copy</label>
+        <input name="physical_format" type="text" required>
+        <button type="submit">Add copy to collection</button>
+    </form>
 {% endblock %}
