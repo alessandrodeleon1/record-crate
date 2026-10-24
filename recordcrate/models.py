@@ -34,7 +34,6 @@ class Orders(models.Model):
 
 
 class Order_Item(models.Model):
-    price = models.DecimalField(max_digits=10, decimal_places=2)
     order_id = models.ForeignKey(
         "Orders",
         db_column="order_id",
