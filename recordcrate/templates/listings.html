@@ -37,6 +37,19 @@
         &middot; {{ item.release_id.year|default:"—" }}
         &middot; {{ item.release_id.label|default:"No label" }}
       </p>
+      {% if not user.is_authenticated %}
+        <a href="{% url 'recordcrate:login' %}">Log in to buy</a>
+      {% elif item.item_id in owned_ids %}
+        <form method="POST" action="{% url 'recordcrate:unlist_item' item.item_id %}">
+          {% csrf_token %}
+          <button type="submit">Unlist</button>
+        </form>
+      {% else %}
+        <form method="POST" action="{% url 'recordcrate:add_to_cart' item.item_id %}">
+          {% csrf_token %}
+          <button type="submit">Add to cart</button>
+        </form>
+      {% endif %}
     </a>
   {% endfor %}
 </div>
