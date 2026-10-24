@@ -1,14 +1,17 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from django.db.models import Q, Count
+from django.db.models import Q
+from django.db.models import Count
+from django.contrib import messages
+from django.views.decorators.http import require_POST
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from recordcrate.forms import CustomUserCreationForm, ReleaseCreationForm, SellItemForm
 from django.http import HttpResponseRedirect
 
 from recordcrate.models import Release, Item, Owns, Order_Item, Orders, AuthUser
-
+from recordcrate.forms import CustomUserCreationForm, SellItemForm
 
 def index(request):
     recent_releases = Release.objects.order_by("-release_id")[:10]
@@ -79,6 +82,12 @@ def listings(request):
         .order_by("genre")
     )
 
+    owned_ids = set()
+    if request.user.is_authenticated:
+        owned_ids = set(
+            Owns.objects.filter(user_id=request.user.pk).values_list("item_id", flat=True)
+        )
+
     return render(
         request,
         "listings.html",
@@ -88,6 +97,7 @@ def listings(request):
             "genres": genres,
             "query": query,
             "selected_genre": genre,
+            "owned_ids": owned_ids,
         },
     )
 
@@ -253,6 +263,41 @@ def my_listings(request, user_id):
 
   return render(request, "user/active_listings.html", context)
 
+
+@login_required(login_url="recordcrate:login")
+@require_POST
+def add_to_cart(request, item_id):
+    item = get_object_or_404(Item, pk=item_id, for_sale=True)
+
+    if Owns.objects.filter(item_id=item, user_id=request.user.pk).exists():
+        messages.error(request, "You can't buy your own item.")
+        return redirect("recordcrate:listings")
+
+    order = Orders.objects.filter(
+        placed_by_user_id_id=request.user.pk, shipping_status="cart"
+    ).first()
+    if order is None:
+        order = Orders.objects.create(
+            placed_by_user_id_id=request.user.pk,
+            shipping_address="",
+            shipping_status="cart",
+        )
+
+    Order_Item.objects.get_or_create(
+        order_id=order, item_id=item, defaults={"price": item.price}
+    )
+
+    messages.success(request, "Added to cart.")
+    return redirect("recordcrate:listings")
+
+
+@login_required(login_url="recordcrate:login")
+@require_POST
+def unlist_item(request, item_id):
+    get_object_or_404(Owns, item_id=item_id, user_id=request.user.pk)
+    Item.objects.filter(pk=item_id).update(for_sale=False)
+    messages.success(request, "Item removed from sale.")
+    return redirect("recordcrate:my_listings", user_id=request.user.pk)
 
 # User Authentication ###############3
 def register(request):

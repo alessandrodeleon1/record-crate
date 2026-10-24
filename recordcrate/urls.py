@@ -18,11 +18,13 @@ urlpatterns = [
     path("register/", views.register, name="register"),
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
-
+   
     # user
     path("profile/<int:user_id>/", views.profile, name="user_profile"),
     path("profile/<int:user_id>/collection/", views.my_collection, name="my_collection"),
     path("profile/<int:user_id>/activelistings/", views.my_listings, name="my_listings"),
     path("items/<int:item_id>/sell/", views.sell_item, name="sell_item"),
 
+    path("items/<int:item_id>/cart/", views.add_to_cart, name="add_to_cart"),
+    path("items/<int:item_id>/unlist/", views.unlist_item, name="unlist_item"),
 ]
