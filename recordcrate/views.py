@@ -284,7 +284,7 @@ def add_to_cart(request, item_id):
         )
 
     Order_Item.objects.get_or_create(
-        order_id=order, item_id=item, defaults={"price": item.price}
+        order_id=order, item_id=item,
     )
 
     messages.success(request, "Added to cart.")

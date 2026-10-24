@@ -102,8 +102,8 @@ class Item(models.Model):
 
     item_id = models.AutoField(primary_key=True, blank=False)
     physical_format = models.CharField(max_length=20, blank=False)
-    for_sale = models.BooleanField(default=False)
-    price = models.DecimalField(default=0.00, max_digits=5, decimal_places=2)
+    for_sale = models.BooleanField(default=False, blank=False)
+    price = models.DecimalField(default=0.00, max_digits=5, decimal_places=2, blank=True, null=True)
     condition = models.CharField(
         max_length=20, choices=CONDITION_CHOICES, blank=True, null=True
     )
