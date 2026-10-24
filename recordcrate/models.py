@@ -90,10 +90,23 @@ class Release(models.Model):
 
 
 class Item(models.Model):
+    CONDITION_CHOICES = [
+        ("mint", "Mint"),
+        ("near_mint", "Near mint"),
+        ("very_good", "Very good"),
+        ("good", "Good"),
+        ("fair", "Fair"),
+        ("poor", "Poor"),
+    ]
+
+
     item_id = models.AutoField(primary_key=True, blank=False)
     physical_format = models.CharField(max_length=20, blank=False)
     for_sale = models.BooleanField(default=False)
     price = models.DecimalField(default=0.00, max_digits=5, decimal_places=2)
+    condition = models.CharField(
+        max_length=20, choices=CONDITION_CHOICES, blank=True, null=True
+    )
     release_id = models.ForeignKey(
         "Release",
         db_column="release_id",
