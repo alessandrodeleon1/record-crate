@@ -24,8 +24,24 @@ class CustomUserCreationForm(UserCreationForm):
             )
         return auth_user
 
-class ReleaseForm(forms.ModelForm):
-    class Meta :
+class ReleaseCreationForm(forms.ModelForm):
+    # enter data for all fields except release_id
+
+    # title = forms.CharField(required=True, label="Title")
+    # genre = forms.CharField(required=False, label="Genre")
+    # year = forms.GetIntegerField(required=False, label="Year")
+    # media_format = forms.GetIntegerField(required=False, label="Genre")
+    # artist = forms.GetCharField(required=False, label="Artist")
+    # label = forms.GetCharField(required=False, label="Label")
+
+    class Meta:
         model = Release
-        # enter data for all fields except release_id
         exclude = ['release_id']
+
+        labels ={
+            'title': "Title",
+            'genre': "Genre",
+            'year': "Year",
+            'artist': "Artist",
+            'label': "Label",
+        }

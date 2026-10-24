@@ -15,6 +15,7 @@
                 <li><a href="{% url 'recordcrate:listings' %}">Listings</a></li>
                 <!-- if logged in, show -->
                 {% if user.is_authenticated %}
+                    <li><a href="{% url 'recordcrate:create_release' %}">Create Release</a></li>
                     <li><a href="{% url 'recordcrate:user_profile' user.pk %}">Profile</a></li>
                     <li>
                     <form action="{% url 'recordcrate:logout' %}" method="POST">

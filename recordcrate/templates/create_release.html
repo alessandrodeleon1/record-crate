@@ -1,4 +1,12 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h1>Create a release</h1>
+
+    <h1>Create a release</h1>
+    <form action="{% url 'recordcrate:create_release' %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+
 {% endblock %}

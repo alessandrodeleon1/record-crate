@@ -1,16 +1,15 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from django.db.models import Q
-from django.db.models import Count
+from django.db.models import Q, Count
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
-from recordcrate.forms import CustomUserCreationForm
+from recordcrate.forms import CustomUserCreationForm, ReleaseCreationForm
+from django.http import HttpResponseRedirect
 
 from recordcrate.models import Release, Item, Owns, Order_Item, Orders, AuthUser
 
 
-# Create your views here.
 def index(request):
     recent_items = Item.objects.select_related("release_id").order_by("-item_id")[:10]
     return render(
@@ -58,7 +57,7 @@ def listings(request):
 
 def item_detail(request, item_id):
     item = get_object_or_404(Item.objects.select_related("release_id"), pk=item_id)
-    owners = Owns.objects.filter(item_id=item).select_related("user_id")
+    owners = Owns.objects.filter(item_id=item)#.select_related("user_id")
     return render(request, "item_detail.html", {"item": item, "owners": owners})
 
 
@@ -132,8 +131,29 @@ def profile(request, user_id):
     current_user = get_object_or_404(AuthUser, pk=user_id)
     return render(request, "user/profile.html", {"current_user":current_user})
 
+@login_required(login_url="recordcrate:login")
 def create_release(request):
-    return redirect(request, "create_release.html")
+    if request.method == "POST":
+        form = ReleaseCreationForm(request.POST)
+        if form.is_valid():
+            new_release = form.save()
+            # release = Release.objects.create(
+            #     title = request.POST['title'],
+            #     genre = request.POST['genre'],
+            #     year = request.POST['year'],
+            #     media_format = request.POST['media format'],
+            #     artist = request.POST['artist'],
+            #     label = request.POST['label'],
+            # )
+            return redirect("recordcrate:release_detail", release_id=new_release.release_id)
+    else:
+        form = ReleaseCreationForm()
+    return render(request, 'create_release.html', {"form": form})
+
+#
+#         return HttpResponseRedirect
+#
+#     return redirect(request, "create_release.html")
 
 def my_collection(request, user_id):
     current_user = get_object_or_404(AuthUser,pk=user_id)
