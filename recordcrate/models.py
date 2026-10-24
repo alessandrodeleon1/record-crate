@@ -7,13 +7,12 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
-
 class Orders(models.Model):
     order_id = models.AutoField(primary_key=True, blank=False)
     shipping_address = models.CharField(max_length=50)
     shipping_status = models.CharField(max_length=50)
     placed_by_user_id = models.ForeignKey(
-        "User",
+        "AuthUser",
         related_name="placed_order",
         db_column="placed_by_user_id",
         on_delete=models.SET_NULL,
@@ -21,7 +20,7 @@ class Orders(models.Model):
         null=True,
     )
     received_by_user_id = models.ForeignKey(
-        "User",
+        "AuthUser",
         related_name="received_order",
         db_column="received_by_user_id",
         on_delete=models.SET_NULL,
@@ -56,8 +55,8 @@ class Order_Item(models.Model):
 
 class Owns(models.Model):
     user_id = models.ForeignKey(
-        "User",
-        db_column="user_id",
+        "AuthUser",
+        db_column="user.id",
         on_delete=models.CASCADE,  # no users exists to own
         blank=True,
         null=True,
@@ -92,8 +91,23 @@ class Release(models.Model):
 
 
 class Item(models.Model):
+    CONDITION_CHOICES = [
+        ("mint", "Mint"),
+        ("near_mint", "Near mint"),
+        ("very_good", "Very good"),
+        ("good", "Good"),
+        ("fair", "Fair"),
+        ("poor", "Poor"),
+    ]
+
+
     item_id = models.AutoField(primary_key=True, blank=False)
     physical_format = models.CharField(max_length=20, blank=False)
+    for_sale = models.BooleanField(default=False)
+    price = models.DecimalField(default=0.00, max_digits=5, decimal_places=2)
+    condition = models.CharField(
+        max_length=20, choices=CONDITION_CHOICES, blank=True, null=True
+    )
     release_id = models.ForeignKey(
         "Release",
         db_column="release_id",
@@ -105,17 +119,6 @@ class Item(models.Model):
     class Meta:
         managed = True
         db_table = "Item"
-
-
-class User(models.Model):
-    user_id = models.AutoField(primary_key=True)
-    city = models.CharField(max_length=20, blank=True, null=True)
-    address = models.CharField(max_length=50, blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = "User"
-
 
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
@@ -137,7 +140,7 @@ class AuthGroupPermissions(models.Model):
 
 
 class AuthPermission(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, primary_key=True)
     content_type = models.ForeignKey("DjangoContentType", models.DO_NOTHING)
     codename = models.CharField(max_length=100)
 

@@ -13,6 +13,20 @@
             <ul>
                 <li><a href="{% url 'recordcrate:homepage' %}">RecordCrate</a></li>
                 <li><a href="{% url 'recordcrate:listings' %}">Listings</a></li>
+                <!-- if logged in, show -->
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'recordcrate:user_profile' user.pk %}">Profile</a></li>
+                    <li>
+                    <form action="{% url 'recordcrate:logout' %}" method="POST">
+                        {% csrf_token %}
+                    <button>Logout</button>
+                    </form>
+                    </li>
+                {% else %}
+                <li><a href="{% url 'recordcrate:login' %}">Login</a></li>
+                <li><a href="{% url 'recordcrate:register' %}">Register</a></li>
+                {% endif %}
+
 				<!--- TODO: needs more links--!>
 			</ul>
         </nav>

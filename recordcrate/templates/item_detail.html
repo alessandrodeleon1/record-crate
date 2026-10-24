@@ -48,8 +48,8 @@
       <ul>
         {% for owner in owners %}
           <li>
-            <a href="{% url 'recordcrate:user_collection' owner.user_id.user_id %}">
-              User #{{ owner.user_id.user_id }}
+            <a href="{% url 'recordcrate:my_collection' owner.user_id.pk %}">
+              {{ owner.user_id.username }}
             </a>
           </li>
         {% endfor %}

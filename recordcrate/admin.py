@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Item, Order_Item, Orders, Owns, Release, User
+from .models import Item, Order_Item, Orders, Owns, Release, AuthUser
 
 
 @admin.register(Release)
@@ -38,7 +38,3 @@ class OrdersAdmin(admin.ModelAdmin):
     list_filter = ("shipping_status",)
     inlines = [OrderItemInline]
 
-
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ("user_id", "city")

@@ -1,12 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>{% block title %}{% endblock %}</title>
-</head>
-<body>
-  <div id="content">
-    {% block content %}
-    {% endblock %}
-  </div>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+
+{% block content %}
+    <nav class="profilebar">
+       <ul>
+           <li><a href="{% url 'recordcrate:my_listings' current_user.pk %}">Active Listings</a></li>
+           <li><a href="{% url 'recordcrate:my_collection' current_user.pk %}">Collection</a></li>
+       </ul>
+    </nav>
+<h1>{{current_user.username}}'s profile</h1>
+{% endblock %}
