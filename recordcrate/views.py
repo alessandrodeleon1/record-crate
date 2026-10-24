@@ -1,26 +1,59 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from django.db.models import Q
-from django.db.models import Count
+from django.db.models import Q, Count
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
-from recordcrate.forms import CustomUserCreationForm
+from recordcrate.forms import CustomUserCreationForm, ReleaseCreationForm
+from django.http import HttpResponseRedirect
 
 from recordcrate.models import Release, Item, Owns, Order_Item, Orders, AuthUser
 
 
-# Create your views here.
 def index(request):
-    recent_items = Item.objects.select_related("release_id").order_by("-item_id")[:10]
+    recent_releases = Release.objects.order_by("-release_id")[:10]
     return render(
         request,
         "home.html",
         {
-            "recent_items": recent_items,
+            "recent_releases": recent_releases,
         },
     )
 
+
+def releases(request):
+    query = request.GET.get("q", "").strip()
+    genre = request.GET.get("genre", "").strip()
+
+    releases = Release.objects.order_by("-release_id")
+
+    if query:
+        releases = release.filter(
+            Q(title__icontains=query)
+            | Q(artist__icontains=query)
+            | Q(label__icontains=query)
+        )
+    if genre:
+        releases = releases.filter(genre__iexact=genre)
+
+    genres = (
+        Release.objects.exclude(genre__isnull=True)
+        .exclude(genre="")
+        .values_list("genre", flat=True)
+        .distinct()
+        .order_by("genre")
+    )
+
+    return render(
+        request,
+        "releases.html",
+        {
+            "releases": releases,
+            "genres": genres,
+            "query": query,
+            "selected_genre": genre,
+        },
+    )
 
 def listings(request):
     query = request.GET.get("q", "").strip()
@@ -68,6 +101,22 @@ def item_detail(request, item_id):
 def release_detail(request, release_id):
     release = get_object_or_404(Release, pk=release_id)
     copies = Item.objects.filter(release_id=release).order_by("physical_format")
+
+    if request.method == "POST" and request.user.is_authenticated:
+        physical_format = request.POST.get("physical_format")
+        if physical_format:
+            copy = Item.objects.create(
+                physical_format = physical_format,
+                for_sale = False,
+                release_id = release,
+            )
+            user = AuthUser.objects.get(pk=request.user.pk)
+            Owns.objects.create(
+                user_id = user,
+                item_id = copy
+            )
+        return redirect("recordcrate:release_detail", release_id=release.release_id)
+
     return render(
         request, "release_detail.html", {"release": release, "copies": copies}
     )
@@ -135,8 +184,21 @@ def profile(request, user_id):
     profile_user = get_object_or_404(AuthUser, pk=user_id)
     return render(request, "user/profile.html", {"current_user":profile_user})
 
+@login_required(login_url="recordcrate:login")
 def create_release(request):
-    return redirect(request, "create_release.html")
+    if request.method == "POST":
+        form = ReleaseCreationForm(request.POST)
+        if form.is_valid():
+            new_release = form.save()
+            return redirect("recordcrate:release_detail", release_id=new_release.release_id)
+    else:
+        form = ReleaseCreationForm()
+    return render(request, 'create_release.html', {"form": form})
+
+#
+#         return HttpResponseRedirect
+#
+#     return redirect(request, "create_release.html")
 
 def my_collection(request, user_id):
   profile_user = get_object_or_404(AuthUser, pk=user_id)
@@ -145,7 +207,7 @@ def my_collection(request, user_id):
       Owns.objects.filter(user_id=profile_user)
       .select_related(
           "item_id", "item_id__release_id"
-      ) 
+      )
   )
 
   context = {

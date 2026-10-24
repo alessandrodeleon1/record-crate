@@ -19,9 +19,15 @@ class CustomUserCreationForm(UserCreationForm):
 class ReleaseForm(forms.ModelForm):
     class Meta :
         model = Release
-        # enter data for all fields except release_id
         exclude = ['release_id']
 
+        labels ={
+            'title': "Title",
+            'genre': "Genre",
+            'year': "Year",
+            'artist': "Artist",
+            'label': "Label",
+        }
 class SellItemForm(forms.ModelForm):
     class Meta:
         model = Item

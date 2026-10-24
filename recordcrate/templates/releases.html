@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Releases{% endblock %}
+
+{% block content %}
+<section class="listings-header">
+  <h1>All releases</h1>
+
+  <form method="GET" action="{% url 'recordcrate:releases' %}">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search artists, titles, labels...">
+    <select name="genre">
+      <option value="">All genres</option>
+      {% for genre in genres %}
+        <option value="{{ genre }}" {% if genre == selected_genre %}selected{% endif %}>{{ genre }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Apply</button>
+    {% if query or selected_genre %}
+      <a href="{% url 'recordcrate:releases' %}">Clear</a>
+    {% endif %}
+  </form>
+
+  <p class="result-count">{{ releases|length }} result{{ releases|length|pluralize }}</p>
+</section>
+
+<div class="listings-grid">
+  {% for release in releases %}
+    <a class="listing-card" href="{% url 'recordcrate:release_detail' release.release_id %}">
+      <h2>{{ release.title }}</h2>
+      <p class="artist">{{ release.artist|default:"Unknown artist" }}</p>
+      <p class="meta">
+        {{ release.media_format }}
+        &middot; {{ release.year|default:"—" }}
+        &middot; {{ release.label|default:"No label" }}
+      </p>
+    </a>
+  {% empty %}
+    <p class="empty">No Releases found.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -34,7 +34,6 @@ class Orders(models.Model):
 
 
 class Order_Item(models.Model):
-    price = models.DecimalField(max_digits=10, decimal_places=2)
     order_id = models.ForeignKey(
         "Orders",
         db_column="order_id",
@@ -72,18 +71,18 @@ class Owns(models.Model):
 
 class Release(models.Model):
     release_id = models.AutoField(primary_key=True, blank=False)
-    title = models.CharField(max_length=20, blank=False)
+    title = models.CharField(max_length=50, blank=False)
     genre = models.CharField(
-        max_length=20, blank=True, null=True
+        max_length=50, blank=True, null=True
     )  # genre may be unkown - niche release
     year = models.PositiveIntegerField(blank=True, null=True)  # year may be unkown
     media_format = models.CharField(
         max_length=20, blank=True, null=True
     )  # format may not be certain
     artist = models.CharField(
-        max_length=30, blank=True, null=True
+        max_length=50, blank=True, null=True
     )  # artist may be unknown
-    label = models.CharField(max_length=30, blank=True, null=True)
+    label = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         managed = True
