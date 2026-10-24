@@ -20,11 +20,15 @@
     {% endif %}
   </form>
 
-  <p class="result-count">{{ items|length }} result{{ items|length|pluralize }}</p>
+  {% if for_sale_items|length <= 0 %}
+    <p>No listings for sale..</p>
+  {% else %}
+    <p class="result-count">{{ for_sale_items|length }} result{{ for_sale_items|length|pluralize }}</p>
+  {% endif %}
 </section>
 
 <div class="listings-grid">
-  {% for item in items %}
+  {% for item in for_sale_items %}
     <a class="listing-card" href="{% url 'recordcrate:item_detail' item.item_id %}">
       <h2>{{ item.release_id.title }}</h2>
       <p class="artist">{{ item.release_id.artist|default:"Unknown artist" }}</p>
@@ -34,8 +38,6 @@
         &middot; {{ item.release_id.label|default:"No label" }}
       </p>
     </a>
-  {% empty %}
-    <p class="empty">No listings found.</p>
   {% endfor %}
 </div>
 {% endblock %}

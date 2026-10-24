@@ -24,7 +24,7 @@ urlpatterns = [
     # user
     path("profile/<int:user_id>/", views.profile, name="user_profile"),
     path("profile/<int:user_id>/collection/", views.my_collection, name="my_collection"),
-    path("profile/<int:user_id>/active-listings", views.my_listings, name="my_listings"),
+    path("profile/<int:user_id>/activelistings/", views.my_listings, name="my_listings"),
 
 
 ]

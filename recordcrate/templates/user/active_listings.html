@@ -1,11 +1,26 @@
-{% extends "user/profile.html" %}
+{% extends "base.html" %}
 
-{% block title %}Active Listings{% endblock %}
+{% block title %}Active Listings for {{ profile_user.username }}{% endblock %}
 
 {% block content %}
+  <h2>Active Listings by {{ profile_user.username }}</h2>
+  
+  <p>{{ active_listings|length }} active listing{{ active_listings|length|pluralize }} found.</p>
 
-<ul>
-    <li>Listings goes here, if there are any</li>
-</ul>
+  <div class="listings-container">
+    {% for ownership in active_listings %}
+      <div class="listing-card">
+          <h3>{{ ownership.item_id.release_id.title|default:"Untitled" }} : ${{ ownership.item_id.price }}</h3>
+        <p><strong>Artist:</strong> {{ ownership.item_id.release_id.artist|default:"Unknown artist" }}</p>
+        <p>
+          <strong>Format:</strong> {{ ownership.item_id.physical_format }} 
+          · <strong>Year:</strong> {{ ownership.item_id.release_id.year|default:"—" }}
+          · <strong>Label:</strong> {{ ownership.item_id.release_id.label|default:"No label" }}
+        </p>
+      </div>
+    {% empty %}
+      <p>This user has no active listings for sale right now.</p>
+    {% endfor %}
+  </div>
 
 {% endblock %}

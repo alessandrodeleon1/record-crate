@@ -6,7 +6,7 @@
 {% block content %}
     <nav class="profilebar">
        <ul>
-           <li><a href="activelistings.html">Active Listings</a></li>
+           <li><a href="{% url 'recordcrate:my_listings' current_user.pk %}">Active Listings</a></li>
            <li><a href="{% url 'recordcrate:my_collection' current_user.pk %}">Collection</a></li>
        </ul>
     </nav>
