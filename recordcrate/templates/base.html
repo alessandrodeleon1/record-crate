@@ -12,6 +12,7 @@
         <nav id="navbar">
             <ul>
                 <li><a href="{% url 'recordcrate:homepage' %}">RecordCrate</a></li>
+                <li><a href="{% url 'recordcrate:releases' %}">Releases</a></li>
                 <li><a href="{% url 'recordcrate:listings' %}">Listings</a></li>
                 <!-- if logged in, show -->
                 {% if user.is_authenticated %}
