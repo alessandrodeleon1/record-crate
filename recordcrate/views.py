@@ -11,12 +11,12 @@ from recordcrate.models import Release, Item, Owns, Order_Item, Orders, AuthUser
 
 
 def index(request):
-    recent_items = Item.objects.select_related("release_id").order_by("-item_id")[:10]
+    recent_releases = Release.objects.order_by("-release_id")[:10]
     return render(
         request,
         "home.html",
         {
-            "recent_items": recent_items,
+            "recent_releases": recent_releases,
         },
     )
 

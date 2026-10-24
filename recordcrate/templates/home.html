@@ -17,7 +17,7 @@
 
 <div class="home-columns">
   <section class="recent">
-    <h2>Recently added</h2>
+    <h2>Releases recently added to the database</h2>
     <table>
       <thead>
         <tr>
@@ -28,16 +28,16 @@
         </tr>
       </thead>
       <tbody>
-        {% for item in recent_items %}
+        {% for release in recent_releases %}
         <tr>
           <td>
-            <a href="{% url 'recordcrate:item_detail' item.item_id %}">
-              {{ item.release_id.title }}
+            <a href="{% url 'recordcrate:release_detail' release.release_id %}">
+              {{ release.title }}
             </a>
           </td>
-          <td>{{ item.release_id.artist|default:"Unknown" }}</td>
-          <td>{{ item.physical_format }}</td>
-          <td>{{ item.release_id.year|default:"—" }}</td>
+          <td>{{ release.artist|default:"Unknown" }}</td>
+          <td>{{ release.media_format }}</td>
+          <td>{{ release.year|default:"—" }}</td>
         </tr>
         {% empty %}
         <tr><td colspan="4">Nothing listed yet.</td></tr>
