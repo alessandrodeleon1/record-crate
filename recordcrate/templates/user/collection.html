@@ -1,11 +1,24 @@
-{% extends "user/profile.html" %}
+{% extends "base.html" %}
 
-{% block title %}Collection{% endblock %}
+{% block title %}{{ profile_user.username }}'s Collection{% endblock %}
 
 {% block content %}
-
-<ul>
-    <li>Collection goes here, if there is one</li>
-</ul>
+  <h2>{{ profile_user.username }}'s Personal Collection</h2>
+  
+  <div class="listings-container">
+    {% for ownership in collection_items %}
+      <div class="listing-card">
+        <h3>{{ ownership.item_id.release_id.title|default:"Untitled" }}</h3>
+        <p><strong>Artist:</strong> {{ ownership.item_id.release_id.artist|default:"Unknown artist" }}</p>
+        <p>
+          <strong>Format:</strong> {{ ownership.item_id.physical_format }} 
+          · <strong>Year:</strong> {{ ownership.item_id.release_id.year|default:"—" }}
+          · <strong>Label:</strong> {{ ownership.item_id.release_id.label|default:"No label" }}
+        </p>
+      </div>
+    {% empty %}
+      <p>This user has no items in their collection.</p>
+    {% endfor %}
+  </div>
 
 {% endblock %}

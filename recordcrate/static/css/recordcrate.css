@@ -94,6 +94,26 @@ body {
 	color: #ffffff;
 }
 
+#navbar li:last-child {
+	margin-left: auto;
+}
+
+#navbar ul li form button {
+  background: none;
+  border: none;
+  padding: 10px 14px;
+	border-radius: 6px;
+  margin: 0;
+  font: inherit;
+  color: #ffffff;
+  cursor: pointer;
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+#navbar ul li form button:hover {
+	background-color: #505050;
+	color: #ffffff;
+}
 /* stuff for base.html */
 
 /* stuff for profile.html */

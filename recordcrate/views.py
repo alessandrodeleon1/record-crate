@@ -27,6 +27,8 @@ def listings(request):
     genre = request.GET.get("genre", "").strip()
 
     items = Item.objects.select_related("release_id").order_by("-item_id")
+    for_sale_items = items.filter(for_sale=True)
+
     if query:
         items = items.filter(
             Q(release_id__title__icontains=query)
@@ -49,6 +51,7 @@ def listings(request):
         "listings.html",
         {
             "items": items,
+            "for_sale_items": for_sale_items,
             "genres": genres,
             "query": query,
             "selected_genre": genre,
@@ -58,7 +61,7 @@ def listings(request):
 
 def item_detail(request, item_id):
     item = get_object_or_404(Item.objects.select_related("release_id"), pk=item_id)
-    owners = Owns.objects.filter(item_id=item).select_related("user_id")
+    owners = Owns.objects.filter(item_id=item)#.select_related("user_id")
     return render(request, "item_detail.html", {"item": item, "owners": owners})
 
 
@@ -129,19 +132,45 @@ def random_release(request):
 # user folder
 @login_required(login_url="recordcrate:login")
 def profile(request, user_id):
-    current_user = get_object_or_404(AuthUser, pk=user_id)
-    return render(request, "user/profile.html", {"current_user":current_user})
+    profile_user = get_object_or_404(AuthUser, pk=user_id)
+    return render(request, "user/profile.html", {"current_user":profile_user})
 
 def create_release(request):
     return redirect(request, "create_release.html")
 
 def my_collection(request, user_id):
-    current_user = get_object_or_404(AuthUser,pk=user_id)
-    return render(request, "user/collection.html", {"current_user":current_user})
+  profile_user = get_object_or_404(AuthUser, pk=user_id)
+
+  collection_items = (
+      Owns.objects.filter(user_id=profile_user)
+      .select_related(
+          "item_id", "item_id__release_id"
+      ) 
+  )
+
+  context = {
+      "profile_user": profile_user,
+      "collection_items": collection_items,
+  }
+
+  return render(request, "user/collection.html", context)
 
 def my_listings(request, user_id):
-    current_user = get_object_or_404(AuthUser,pk=user_id)
-    return render(request, "user/active_listings.html", {"current_user":current_user})
+  profile_user = get_object_or_404(AuthUser, pk=user_id)
+
+  active_listings = (
+      Owns.objects.filter(user_id=profile_user, item_id__for_sale=True)
+      .select_related(
+          "item_id", "item_id__release_id"
+      )  # Optimizes database queries
+  )
+
+  context = {
+      "profile_user": profile_user,
+      "active_listings": active_listings,
+  }
+
+  return render(request, "user/active_listings.html", context)
 
 
 # User Authentication ###############3
