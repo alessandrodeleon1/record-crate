@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Sell {{ item.release_id.title }}{% endblock %}
+
+{% block content %}
+<h1>Sell {{ item.release_id.title }}</h1>
+<p>{{ item.physical_format }}</p>
+
+<form method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">List for sale</button>
+</form>
+
+<p><a href="{% url 'recordcrate:my_collection' request.user.pk %}">Cancel</a></p>
+{% endblock %}

@@ -15,6 +15,9 @@
           · <strong>Year:</strong> {{ ownership.item_id.release_id.year|default:"—" }}
           · <strong>Label:</strong> {{ ownership.item_id.release_id.label|default:"No label" }}
         </p>
+        {% if request.user.pk == profile_user.pk and not ownership.item_id.for_sale %}
+          <a href="{% url 'recordcrate:sell_item' ownership.item_id.item_id %}" class="button">Sell this item</a>
+        {% endif %}
       </div>
     {% empty %}
       <p>This user has no items in their collection.</p>

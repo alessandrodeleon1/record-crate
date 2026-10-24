@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User as DjangoUser
-from recordcrate.models import AuthUser, Release
+from recordcrate.models import AuthUser, Release, Item
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -14,18 +14,19 @@ class CustomUserCreationForm(UserCreationForm):
 
     def save(self, commit=True):
         # Save the Django auth user first
-        auth_user = super().save(commit=commit)
-        if commit:
-            # User model created and linked to Django user
-            AuthUser.objects.get_or_create(
-                account=auth_user,
-                city=self.cleaned_data.get("city"),
-                address=self.cleaned_data.get("address"),
-            )
-        return auth_user
-
+        return super().save(commit=commit)
+        
 class ReleaseForm(forms.ModelForm):
     class Meta :
         model = Release
         # enter data for all fields except release_id
         exclude = ['release_id']
+
+class SellItemForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = ["price", "condition"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["condition"].required = True

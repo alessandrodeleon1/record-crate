@@ -61,7 +61,7 @@ def listings(request):
 
 def item_detail(request, item_id):
     item = get_object_or_404(Item.objects.select_related("release_id"), pk=item_id)
-    owners = Owns.objects.filter(item_id=item)#.select_related("user_id")
+    owners = Owns.objects.filter(item_id=item)
     return render(request, "item_detail.html", {"item": item, "owners": owners})
 
 
@@ -155,6 +155,25 @@ def my_collection(request, user_id):
 
   return render(request, "user/collection.html", context)
 
+
+@login_required(login_url="recordcrate:login")
+def sell_item(request, item_id):
+    # Only the owner of this copy can list it
+    ownership = get_object_or_404(Owns, item_id=item_id, user_id=request.user.pk)
+    item = ownership.item_id
+
+    if request.method == "POST":
+        form = SellItemForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.for_sale = True
+            item.save()
+            return redirect("recordcrate:my_listings", user_id=request.user.pk)
+    else:
+        form = SellItemForm(instance=item)
+
+    return render(request, "user/sell_item.html", {"form": form, "item": item})
+
 def my_listings(request, user_id):
   profile_user = get_object_or_404(AuthUser, pk=user_id)
 
@@ -178,19 +197,11 @@ def register(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            django_user = form.save()
-
-            User.objects.create(
-                user_id=django_user,
-                city = form.cleaned_data.get('city'),
-                address =form.cleaned_data.get('address'),
-            )
-
-            login(request, django_user)
-            return redirect("recordcrate:user_profile", user_id=django_user.profile.user_id)
+            form.save()
+            return redirect("recordcrate:login")
     else:
         form = CustomUserCreationForm()
-    return render(request, 'authenticate/register.html', {"form": form})
+    return render(request, "authenticate/register.html", {"form": form})
 
 def login_view(request):
     if request.method == "POST":
