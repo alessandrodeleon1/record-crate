@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.db.models import Q, Count
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
-from recordcrate.forms import CustomUserCreationForm, ReleaseCreationForm
+from recordcrate.forms import CustomUserCreationForm, ReleaseCreationForm, SellItemForm
 from django.http import HttpResponseRedirect
 
 from recordcrate.models import Release, Item, Owns, Order_Item, Orders, AuthUser

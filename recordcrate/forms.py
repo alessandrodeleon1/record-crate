@@ -15,13 +15,13 @@ class CustomUserCreationForm(UserCreationForm):
     def save(self, commit=True):
         # Save the Django auth user first
         return super().save(commit=commit)
-        
-class ReleaseForm(forms.ModelForm):
+
+class ReleaseCreationForm(forms.ModelForm):
     class Meta :
         model = Release
         exclude = ['release_id']
 
-        labels ={
+        labels = {
             'title': "Title",
             'genre': "Genre",
             'year': "Year",
