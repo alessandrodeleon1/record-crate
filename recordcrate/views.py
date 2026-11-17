@@ -49,7 +49,7 @@ def releases(request):
 
     return render(
         request,
-        "releases.html",
+        "release/releases.html",
         {
             "releases": releases,
             "genres": genres,
@@ -128,7 +128,7 @@ def release_detail(request, release_id):
         return redirect("recordcrate:release_detail", release_id=release.release_id)
 
     return render(
-        request, "release_detail.html", {"release": release, "copies": copies}
+        request, "release/release_detail.html", {"release": release, "copies": copies}
     )
 
 
@@ -203,7 +203,7 @@ def create_release(request):
             return redirect("recordcrate:release_detail", release_id=new_release.release_id)
     else:
         form = ReleaseCreationForm()
-    return render(request, 'create_release.html', {"form": form})
+    return render(request, 'release/create_release.html', {"form": form})
 
 #
 #         return HttpResponseRedirect
