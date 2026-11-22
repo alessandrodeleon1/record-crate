@@ -13,6 +13,7 @@ from django.http import HttpResponseRedirect
 from recordcrate.models import Release, Item, Owns, Order_Item, Orders, AuthUser
 from recordcrate.forms import CustomUserCreationForm, SellItemForm
 
+
 def index(request):
     recent_releases = Release.objects.order_by("-release_id")[:10]
     return render(
@@ -31,7 +32,7 @@ def releases(request):
     releases = Release.objects.order_by("-release_id")
 
     if query:
-        releases = release.filter(
+        releases = releases.filter(
             Q(title__icontains=query)
             | Q(artist__icontains=query)
             | Q(label__icontains=query)
@@ -57,6 +58,7 @@ def releases(request):
             "selected_genre": genre,
         },
     )
+
 
 def listings(request):
     query = request.GET.get("q", "").strip()
@@ -85,7 +87,9 @@ def listings(request):
     owned_ids = set()
     if request.user.is_authenticated:
         owned_ids = set(
-            Owns.objects.filter(user_id=request.user.pk).values_list("item_id", flat=True)
+            Owns.objects.filter(user_id=request.user.pk).values_list(
+                "item_id", flat=True
+            )
         )
 
     return render(
@@ -116,15 +120,11 @@ def release_detail(request, release_id):
         physical_format = request.POST.get("physical_format")
         if physical_format:
             copy = Item.objects.create(
-                physical_format = physical_format,
-                for_sale = False,
-                release_id = release,
+                physical_format=physical_format,
+                for_sale=False,
+                release_id=release,
             )
-            user = AuthUser.objects.get(pk=request.user.pk)
-            Owns.objects.create(
-                user_id = user,
-                item_id = copy
-            )
+            Owns.objects.create(user_id=request.user, item_id=copy)
         return redirect("recordcrate:release_detail", release_id=release.release_id)
 
     return render(
@@ -140,17 +140,17 @@ def artist_releases(request, artist):
 @login_required(login_url="recordcrate:login")
 def user_collection(request, user_id):
     user = get_object_or_404(AuthUser, pk=user_id)
-    owned = Owns.objects.filter(user_id=user).select_related("item_id__release_id")
+    owned = Owns.objects.filter(user_id=user.pk).select_related("item_id__release_id")
     return render(request, "collection.html", {"profile_user": user, "owned": owned})
 
 
 @login_required(login_url="recordcrate:login")
 def order_list(request, user_id):
     user = get_object_or_404(AuthUser, pk=user_id)
-    placed = Orders.objects.filter(placed_by_user_id=user).prefetch_related(
+    placed = Orders.objects.filter(placed_by_user_id=user.pk).prefetch_related(
         "order_item_set__item_id__release_id"
     )
-    received = Orders.objects.filter(received_by_user_id=user).prefetch_related(
+    received = Orders.objects.filter(received_by_user_id=user.pk).prefetch_related(
         "order_item_set__item_id__release_id"
     )
     return render(
@@ -188,11 +188,13 @@ def random_release(request):
         return redirect("recordcrate:listings")
     return redirect("recordcrate:release_detail", release_id=release.release_id)
 
+
 # user folder
 @login_required(login_url="recordcrate:login")
 def profile(request, user_id):
     profile_user = get_object_or_404(AuthUser, pk=user_id)
-    return render(request, "user/profile.html", {"current_user":profile_user})
+    return render(request, "user/profile.html", {"current_user": profile_user})
+
 
 @login_required(login_url="recordcrate:login")
 def create_release(request):
@@ -200,32 +202,33 @@ def create_release(request):
         form = ReleaseCreationForm(request.POST)
         if form.is_valid():
             new_release = form.save()
-            return redirect("recordcrate:release_detail", release_id=new_release.release_id)
+            return redirect(
+                "recordcrate:release_detail", release_id=new_release.release_id
+            )
     else:
         form = ReleaseCreationForm()
-    return render(request, 'release/create_release.html', {"form": form})
+    return render(request, "release/create_release.html", {"form": form})
+
 
 #
 #         return HttpResponseRedirect
 #
 #     return redirect(request, "create_release.html")
 
+
 def my_collection(request, user_id):
-  profile_user = get_object_or_404(AuthUser, pk=user_id)
+    profile_user = get_object_or_404(AuthUser, pk=user_id)
 
-  collection_items = (
-      Owns.objects.filter(user_id=profile_user)
-      .select_related(
-          "item_id", "item_id__release_id"
-      )
-  )
+    collection_items = Owns.objects.filter(user_id=profile_user.pk).select_related(
+        "item_id", "item_id__release_id"
+    )
 
-  context = {
-      "profile_user": profile_user,
-      "collection_items": collection_items,
-  }
+    context = {
+        "profile_user": profile_user,
+        "collection_items": collection_items,
+    }
 
-  return render(request, "user/collection.html", context)
+    return render(request, "user/collection.html", context)
 
 
 @login_required(login_url="recordcrate:login")
@@ -246,22 +249,20 @@ def sell_item(request, item_id):
 
     return render(request, "user/sell_item.html", {"form": form, "item": item})
 
+
 def my_listings(request, user_id):
-  profile_user = get_object_or_404(AuthUser, pk=user_id)
+    profile_user = get_object_or_404(AuthUser, pk=user_id)
 
-  active_listings = (
-      Owns.objects.filter(user_id=profile_user, item_id__for_sale=True)
-      .select_related(
-          "item_id", "item_id__release_id"
-      )  # Optimizes database queries
-  )
+    active_listings = Owns.objects.filter(
+        user_id=profile_user.pk, item_id__for_sale=True
+    ).select_related("item_id", "item_id__release_id")
 
-  context = {
-      "profile_user": profile_user,
-      "active_listings": active_listings,
-  }
+    context = {
+        "profile_user": profile_user,
+        "active_listings": active_listings,
+    }
 
-  return render(request, "user/active_listings.html", context)
+    return render(request, "user/active_listings.html", context)
 
 
 @login_required(login_url="recordcrate:login")
@@ -284,7 +285,8 @@ def add_to_cart(request, item_id):
         )
 
     Order_Item.objects.get_or_create(
-        order_id=order, item_id=item,
+        order_id=order,
+        item_id=item,
     )
 
     messages.success(request, "Added to cart.")
@@ -299,6 +301,7 @@ def unlist_item(request, item_id):
     messages.success(request, "Item removed from sale.")
     return redirect("recordcrate:my_listings", user_id=request.user.pk)
 
+
 # User Authentication ###############3
 def register(request):
     if request.method == "POST":
@@ -310,18 +313,22 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, "authenticate/register.html", {"form": form})
 
+
 def login_view(request):
     if request.method == "POST":
-        form = AuthenticationForm(data=request.POST) # just need username and pass
+        form = AuthenticationForm(data=request.POST)  # just need username and pass
         if form.is_valid():
             login(request, form.get_user())
             return redirect("recordcrate:homepage")
     else:
         form = AuthenticationForm()
-    return render(request, 'authenticate/login.html', {"form": form})
+    return render(request, "authenticate/login.html", {"form": form})
+
 
 def logout_view(request):
     if request.method == "POST":
         logout(request)
         return redirect("recordcrate:homepage")
+
+
 ########################

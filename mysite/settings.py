@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "100.82.229.113",  # prong's tailscale ip
-    ".ts.net", # tailscale funnel
+    ".ts.net",  # tailscale funnel
 ]
 
 # tailscale:
@@ -41,10 +41,10 @@ ALLOWED_HOSTS = [
 #   sudo tailscale funnel --bg 8000
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8000",    # local
-    "http://127.0.0.1:8000",    # local
-    "http://100.82.229.113:8000",# ssh
-    "https://*.ts.net", # tailscale funnel
+    "http://localhost:8000",  # local
+    "http://127.0.0.1:8000",  # local
+    "http://100.82.229.113:8000",  # ssh
+    "https://*.ts.net",  # tailscale funnel
     "http://*.ts.net",  # tailscale funnel
 ]
 
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "behave_django",
     "recordcrate",
 ]
 

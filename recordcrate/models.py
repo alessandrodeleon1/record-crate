@@ -6,13 +6,15 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+from django.conf import settings
+
 
 class Orders(models.Model):
     order_id = models.AutoField(primary_key=True, blank=False)
     shipping_address = models.CharField(max_length=50)
     shipping_status = models.CharField(max_length=50)
     placed_by_user_id = models.ForeignKey(
-        "AuthUser",
+        settings.AUTH_USER_MODEL,
         related_name="placed_order",
         db_column="placed_by_user_id",
         on_delete=models.SET_NULL,
@@ -20,7 +22,7 @@ class Orders(models.Model):
         null=True,
     )
     received_by_user_id = models.ForeignKey(
-        "AuthUser",
+        settings.AUTH_USER_MODEL,
         related_name="received_order",
         db_column="received_by_user_id",
         on_delete=models.SET_NULL,
@@ -54,9 +56,9 @@ class Order_Item(models.Model):
 
 class Owns(models.Model):
     user_id = models.ForeignKey(
-        "AuthUser",
-        db_column="user.id",
-        on_delete=models.CASCADE,  # no users exists to own
+        settings.AUTH_USER_MODEL,
+        db_column="user_id",
+        on_delete=models.CASCADE,
         blank=True,
         null=True,
     )
@@ -99,11 +101,12 @@ class Item(models.Model):
         ("poor", "Poor"),
     ]
 
-
     item_id = models.AutoField(primary_key=True, blank=False)
     physical_format = models.CharField(max_length=20, blank=False)
     for_sale = models.BooleanField(default=False, blank=False)
-    price = models.DecimalField(default=0.00, max_digits=5, decimal_places=2, blank=True, null=True)
+    price = models.DecimalField(
+        default=0.00, max_digits=5, decimal_places=2, blank=True, null=True
+    )
     condition = models.CharField(
         max_length=20, choices=CONDITION_CHOICES, blank=True, null=True
     )
@@ -118,6 +121,7 @@ class Item(models.Model):
     class Meta:
         managed = True
         db_table = "Item"
+
 
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
