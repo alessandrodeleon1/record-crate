@@ -8,6 +8,7 @@
        <ul>
            <li><a href="{% url 'recordcrate:my_listings' current_user.pk %}">Active Listings</a></li>
            <li><a href="{% url 'recordcrate:my_collection' current_user.pk %}">Collection</a></li>
+           <li><a href="{% url 'recordcrate:order_list' current_user.pk %}">Orders</a></li>
        </ul>
     </nav>
 <h1>{{current_user.username}}'s profile</h1>

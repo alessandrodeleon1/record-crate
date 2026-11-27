@@ -32,6 +32,8 @@
     <a class="listing-card" href="{% url 'recordcrate:item_detail' item.item_id %}">
       <h2>{{ item.release_id.title }}</h2>
       <p class="artist">{{ item.release_id.artist|default:"Unknown artist" }}</p>
+      <p>${{ item.price }}</p>
+      <p>{{ item.condition }}</p> <!-- need to use the readable names -->
       <p class="meta">
         {{ item.physical_format }}
         &middot; {{ item.release_id.year|default:"—" }}

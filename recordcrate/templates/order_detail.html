@@ -5,56 +5,20 @@
   <a href="{% url 'recordcrate:homepage' %}">Home</a> &rsaquo;
   <span>Orders of User #{{ profile_user.user_id }}</span>
 </nav>
+<section>
 
-<section class="orders">
-  <h1>Orders of User #{{ profile_user.user_id }}</h1>
-
-  <h2>Placed by this user</h2>
-  {% if placed_orders %}
-    <table>
-      <thead>
-        <tr>
-          <th>Order</th>
-          <th>Status</th>
-          <th>Shipping address</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for order in placed_orders %}
-        <tr>
-          <td><a href="{% url 'recordcrate:order_detail' order.order_id %}">#{{ order.order_id }}</a></td>
-          <td>{{ order.shipping_status }}</td>
-          <td>{{ order.shipping_address }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p class="empty">No placed orders.</p>
-  {% endif %}
-
-  <h2>Received by this user</h2>
-  {% if received_orders %}
-    <table>
-      <thead>
-        <tr>
-          <th>Order</th>
-          <th>Status</th>
-          <th>Shipping address</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for order in received_orders %}
-        <tr>
-          <td><a href="{% url 'recordcrate:order_detail' order.order_id %}">#{{ order.order_id }}</a></td>
-          <td>{{ order.shipping_status }}</td>
-          <td>{{ order.shipping_address }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p class="empty">No received orders.</p>
-  {% endif %}
+{% if line_items %}
+{% for item in line_items %}
+<div>
+  <p>{{ item.item_id.release_id.title }}</p>
+  <p>{{ item.item_id.release_id.media_format }}</p>
+  <p>{{ item.item_id.physical_format }}</p>
+  <p>${{ item.item_id.price }}</p>
+  <a href="{% url 'recordcrate:item_detail' item.item_id.item_id %}"><p>Item Page</p></a>
+  <a href="{% url 'recordcrate:release_detail' item.item_id.release_id.pk %}"><p>Release Page</p></a>
+  <br>
+</div>
+{% endfor %}
+{% endif %}
 </section>
 {% endblock %}

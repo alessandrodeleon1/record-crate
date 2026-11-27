@@ -155,7 +155,7 @@ def order_list(request, user_id):
     )
     return render(
         request,
-        "orders.html",
+        "order_list.html",
         {
             "profile_user": user,
             "placed_orders": placed,
@@ -165,16 +165,18 @@ def order_list(request, user_id):
 
 
 @login_required(login_url="recordcrate:login")
-def order_detail(request, order_id):
+def order_detail(request, user_id, order_id):
     order = get_object_or_404(Orders, pk=order_id)
     line_items = Order_Item.objects.filter(order_id=order).select_related(
         "item_id__release_id"
     )
-    total = sum(li.price for li in line_items)
+    profile_user = get_object_or_404(AuthUser, pk=user_id)
+    total = sum(li.item_id.price or 0 for li in line_items)
     return render(
         request,
         "order_detail.html",
         {
+            "profile_user": profile_user,
             "order": order,
             "line_items": line_items,
             "total": total,
@@ -270,20 +272,29 @@ def my_listings(request, user_id):
 def add_to_cart(request, item_id):
     item = get_object_or_404(Item, pk=item_id, for_sale=True)
 
+    # trying to add an owned item to order
     if Owns.objects.filter(item_id=item, user_id=request.user.pk).exists():
         messages.error(request, "You can't buy your own item.")
         return redirect("recordcrate:listings")
 
+    seller = get_object_or_404(Owns, item_id=item).user_id
+
+    # cart
     order = Orders.objects.filter(
-        placed_by_user_id_id=request.user.pk, shipping_status="cart"
+        placed_by_user_id=request.user.pk,
+        received_by_user_id=seller, 
+        shipping_status="cart"
     ).first()
+    # create an Order if not exists
     if order is None:
         order = Orders.objects.create(
             placed_by_user_id_id=request.user.pk,
+            received_by_user_id=seller,
             shipping_address="",
             shipping_status="cart",
         )
 
+    # add to cart/Order
     Order_Item.objects.get_or_create(
         order_id=order,
         item_id=item,

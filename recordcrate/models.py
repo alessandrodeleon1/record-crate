@@ -13,6 +13,9 @@ class Orders(models.Model):
     order_id = models.AutoField(primary_key=True, blank=False)
     shipping_address = models.CharField(max_length=50)
     shipping_status = models.CharField(max_length=50)
+    # cart
+    # shipped
+    # arrived
     placed_by_user_id = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="placed_order",
