@@ -37,7 +37,7 @@ ALLOWED_HOSTS = [
 ]
 
 # tailscale:
-#   sudo tialscale funnel 8000
+#   sudo tailscale funnel 8000
 #   sudo tailscale funnel --bg 8000
 
 CSRF_TRUSTED_ORIGINS = [
