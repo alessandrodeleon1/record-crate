@@ -12,7 +12,8 @@
 {% if order.shipping_status == "cart" and order.placed_by_user_id_id == request.user.pk %}
 
   <h2>Your Cart</h2>
-
+  <h3>Total ${{ total }}</h3>
+  <h3>{{ items }} Item(s)</h3>
   {% if line_items %}
     <form method="POST" action="{% url 'recordcrate:place_order' profile_user.pk order.order_id %}">
       {% csrf_token %}

@@ -154,6 +154,22 @@ def order_list(request, user_id):
     received = Orders.objects.filter(received_by_user_id=user.pk).prefetch_related(
         "order_item_set__item_id__release_id"
     )
+    # Get line items
+    p_line_items = Order_Item.objects.filter(
+        order_id__in=placed
+    ).select_related("item_id__release_id")
+
+    r_line_items = Order_Item.objects.filter(
+        order_id__in=received
+    ).select_related("item_id__release_id")
+
+    # calculate totals
+    placed_total = sum(li.item_id.price or 0 for li in p_line_items)
+    received_total = sum(li.item_id.price or 0 for li in r_line_items)
+    
+    # count Items
+    placed_items = p_line_items.count()
+    received_items = r_line_items.count()
     return render(
         request,
         "order_list.html",
@@ -161,6 +177,10 @@ def order_list(request, user_id):
             "profile_user": user,
             "placed_orders": placed,
             "received_orders": received,
+            "placed_total": placed_total,
+            "received_total": received_total,
+            "placed_items": placed_items,
+            "received_items": received_items,
         },
     )
 
@@ -173,6 +193,7 @@ def order_detail(request, user_id, order_id):
     )
     profile_user = get_object_or_404(AuthUser, pk=user_id)
     total = sum(li.item_id.price or 0 for li in line_items)
+    items = line_items.count()
     return render(
         request,
         "order_detail.html",
@@ -181,6 +202,7 @@ def order_detail(request, user_id, order_id):
             "order": order,
             "line_items": line_items,
             "total": total,
+            "items": items,
         },
     )
 

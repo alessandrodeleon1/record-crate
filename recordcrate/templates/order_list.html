@@ -18,6 +18,8 @@
           <th>Order</th>
           <th>Status</th>
           <th>Shipping address</th>
+          <th>Total</th>
+          <th>Items</th>
         </tr>
       </thead>
       <tbody>
@@ -26,6 +28,8 @@
           <td><a href="{% url 'recordcrate:order_detail' profile_user.pk order.order_id %}">#{{ order.order_id }}</a></td>
           <td>{{ order.shipping_status }}</td>
           <td>{{ order.shipping_address }}</td>
+          <td>${{ placed_total }}</td>
+          <td>{{ placed_items }}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -42,6 +46,8 @@
         <th>Order</th>
         <th>Status</th>
         <th>Shipping address</th>
+        <th>Total</th>
+        <th>Items</th>
       </tr>
     </thead>
     <tbody>
@@ -55,6 +61,8 @@
             </td>
             <td>{{ order.shipping_status }}</td>
             <td>{{ order.shipping_address }}</td>
+            <td>${{ received_total }}</td>
+            <td>{{ placed_items }}</td>
           </tr>
         {% endif %}
       {% endfor %}
