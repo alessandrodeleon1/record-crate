@@ -55,7 +55,7 @@ def step_empty_catalogue(context):
 
 @given('a release "{title}" by "{artist}"')
 def step_release(context, title, artist):
-    Release.objects.create(title=title, artist=artist, year=2000)
+    Release.objects.get_or_create(title=title, artist=artist, year=2000)
 
 
 @given('a user named "{username}"')

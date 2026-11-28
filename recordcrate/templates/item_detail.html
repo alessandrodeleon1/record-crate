@@ -20,9 +20,12 @@
   </header>
 
   <dl class="item-meta">
+    {% if item.for_sale %}
     <div>
       <dt>Price</dt>
       <dd>${{ item.price }}</dd>
+    <div>
+    {% endif %}
     <div>
       <dt>Format</dt>
       <dd>{{ item.physical_format }}</dd>

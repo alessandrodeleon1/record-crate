@@ -183,7 +183,59 @@ def order_detail(request, user_id, order_id):
         },
     )
 
+@login_required(login_url="recordcrate:login")
+@require_POST
+def place_order(request, user_id, order_id):
 
+    order = get_object_or_404(
+        Orders,
+        pk=order_id,
+        placed_by_user_id=request.user.pk,
+        shipping_status="cart",
+    )
+
+    # # Check that the cart contains items
+    # if not Order_Item.objects.filter(order_id=order).exists():
+    #     messages.error(request, "Your cart is empty.")
+    #     return redirect(
+    #         "recordcrate:order_detail",
+    #         user_id=user_id,
+    #         order_id=order_id,
+    #     )
+
+    shipping_address = request.POST.get("shipping_address", "").strip()
+
+    # validate shipping address
+    if not shipping_address:
+        messages.error(request, "Please enter a shipping address.")
+        return redirect(
+            "recordcrate:order_detail",
+            user_id=user_id,
+            order_id=order_id,
+        )
+
+    if len(shipping_address) > 50:
+        messages.error(request, "Shipping address cannot exceed 50 characters.")
+        return redirect(
+            "recordcrate:order_detail",
+            user_id=user_id,
+            order_id=order_id,
+        )
+
+    # submit order
+    order.shipping_address = shipping_address
+    order.shipping_status = "pending"
+    order.save(update_fields=["shipping_address", "shipping_status"])
+
+    messages.success(request, "Your order has been placed!")
+
+    return redirect(
+        "recordcrate:order_detail",
+        user_id=user_id,
+        order_id=order_id,
+    )
+    
+    
 def random_release(request):
     release = Release.objects.order_by("?").first()
     if release is None:

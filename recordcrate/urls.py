@@ -18,6 +18,7 @@ urlpatterns = [
     
     # buying / selling
     path("items/<int:item_id>/cart/", views.add_to_cart, name="add_to_cart"),
+    path("profile/<int:user_id>/orders/<int:order_id>/place-order/", views.place_order, name="place_order"),
     path("profile/<int:user_id>/orders/", views.order_list, name="order_list"),
     path("profile/<int:user_id>/orders/<int:order_id>/", views.order_detail, name="order_detail"),
     

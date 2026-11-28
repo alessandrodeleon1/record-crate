@@ -3,17 +3,48 @@
 {% block content %}
 <nav class="breadcrumb">
   <a href="{% url 'recordcrate:homepage' %}">Home</a> &rsaquo;
-  <span>Orders of User #{{ profile_user.user_id }}</span>
+  <a href="{% url 'recordcrate:order_list' profile_user.pk %}">Orders</a>
 </nav>
 <section>
+
+{% if order.shipping_status == "cart" and order.placed_by_user_id_id == request.user.pk %}
+
+  <h2>Your Cart</h2>
+
+  {% if line_items %}
+    <form method="POST" action="{% url 'recordcrate:place_order' profile_user.pk order.order_id %}">
+      {% csrf_token %}
+
+      <div>
+        <label for="shipping_address">Shipping Address:</label>
+        <input
+          type="text"
+          id="shipping_address"
+          name="shipping_address"
+          maxlength="50"
+          required
+          placeholder="Enter your shipping address"
+        >
+      </div>
+
+      <button type="submit">Place Order</button>
+    </form>
+  {% else %}
+    <p>Your cart is empty.</p>
+  {% endif %}
+
+{% elif order.shipping_status == "pending" %}
+  <p>Your order has been placed and is pending!</p>
+{% endif %}
 
 {% if line_items %}
 {% for item in line_items %}
 <div>
+  <p>Status: {{ order.shipping_status }}</p>
+  <p>${{ item.item_id.price }}</p>
   <p>{{ item.item_id.release_id.title }}</p>
   <p>{{ item.item_id.release_id.media_format }}</p>
   <p>{{ item.item_id.physical_format }}</p>
-  <p>${{ item.item_id.price }}</p>
   <a href="{% url 'recordcrate:item_detail' item.item_id.item_id %}"><p>Item Page</p></a>
   <a href="{% url 'recordcrate:release_detail' item.item_id.release_id.pk %}"><p>Release Page</p></a>
   <br>

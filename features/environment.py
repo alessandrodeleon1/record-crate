@@ -1,7 +1,18 @@
 from django.test import Client
+from recordcrate.models import AuthUser, Item, Order_Item, Orders, Owns, Release
+
+
+def clear_database():
+    Order_Item.objects.all().delete()
+    Orders.objects.all().delete()
+    Owns.objects.all().delete()
+    Item.objects.all().delete()
+    Release.objects.all().delete()
+    AuthUser.objects.all().delete()
 
 
 def before_scenario(context, scenario):
+    clear_database()
     context.client = Client()
     context.response = None
     context.users = {}
@@ -10,7 +21,6 @@ def before_scenario(context, scenario):
 
 
 def before_step(context, step):
-    # Safety net: make sure the state attributes exist before any step runs.
     if not hasattr(context, "users"):
         context.users = {}
     if not hasattr(context, "items"):
