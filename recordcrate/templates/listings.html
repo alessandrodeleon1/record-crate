@@ -47,10 +47,14 @@
           <button type="submit">Unlist</button>
         </form>
       {% else %}
+        {% if item.item_id not in cart_ids %}
         <form method="POST" action="{% url 'recordcrate:add_to_cart' item.item_id %}">
           {% csrf_token %}
           <button type="submit">Add to cart</button>
         </form>
+        {% else %}
+          <button>Already in cart</button>
+          {% endif %}
       {% endif %}
     </a>
   {% endfor %}

@@ -86,13 +86,22 @@ def listings(request):
     )
 
     owned_ids = set()
+    cart_ids = set()
     if request.user.is_authenticated:
         owned_ids = set(
             Owns.objects.filter(user_id=request.user.pk).values_list(
                 "item_id", flat=True
             )
         )
-
+        # set of all items in cart
+        cart_ids = set(
+            Order_Item.objects.filter(
+                order_id__placed_by_user_id=request.user.pk,
+                order_id__shipping_status="cart",
+            ).values_list("item_id", flat=True)
+        )
+        
+        
     return render(
         request,
         "listings.html",
@@ -103,6 +112,7 @@ def listings(request):
             "query": query,
             "selected_genre": genre,
             "owned_ids": owned_ids,
+            "cart_ids": cart_ids,
         },
     )
 
@@ -110,7 +120,23 @@ def listings(request):
 def item_detail(request, item_id):
     item = get_object_or_404(Item.objects.select_related("release_id"), pk=item_id)
     owners = Owns.objects.filter(item_id=item)
-    return render(request, "item_detail.html", {"item": item, "owners": owners})
+    
+    # set of all items in cart
+    cart_ids = set()
+    if request.user.is_authenticated:
+        cart_ids = set(
+            Order_Item.objects.filter(
+                order_id__placed_by_user_id=request.user.pk,
+                order_id__shipping_status="cart",
+            ).values_list("item_id", flat=True)
+        )
+    
+    return render(request, "item_detail.html", {
+        "item": item, 
+        "owners": owners,
+        "cart_ids": cart_ids,
+        }
+    )
 
 
 def release_detail(request, release_id):
