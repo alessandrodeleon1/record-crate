@@ -9,6 +9,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from recordcrate.forms import CustomUserCreationForm, ReleaseCreationForm, SellItemForm
 from django.http import HttpResponseRedirect
+from django.db import transaction
 
 from recordcrate.models import Release, Item, Owns, Order_Item, Orders, AuthUser
 from recordcrate.forms import CustomUserCreationForm, SellItemForm
@@ -186,7 +187,6 @@ def order_detail(request, user_id, order_id):
 @login_required(login_url="recordcrate:login")
 @require_POST
 def place_order(request, user_id, order_id):
-
     order = get_object_or_404(
         Orders,
         pk=order_id,
@@ -194,18 +194,8 @@ def place_order(request, user_id, order_id):
         shipping_status="cart",
     )
 
-    # # Check that the cart contains items
-    # if not Order_Item.objects.filter(order_id=order).exists():
-    #     messages.error(request, "Your cart is empty.")
-    #     return redirect(
-    #         "recordcrate:order_detail",
-    #         user_id=user_id,
-    #         order_id=order_id,
-    #     )
-
     shipping_address = request.POST.get("shipping_address", "").strip()
 
-    # validate shipping address
     if not shipping_address:
         messages.error(request, "Please enter a shipping address.")
         return redirect(
@@ -222,10 +212,39 @@ def place_order(request, user_id, order_id):
             order_id=order_id,
         )
 
-    # submit order
-    order.shipping_address = shipping_address
-    order.shipping_status = "pending"
-    order.save(update_fields=["shipping_address", "shipping_status"])
+    with transaction.atomic():
+
+        purchased_items = Order_Item.objects.filter(
+            order_id=order
+        ).values_list("item_id", flat=True)
+
+        # remove purchased items from other users' carts/Orders
+        Order_Item.objects.filter(
+            item_id__in=purchased_items,
+            order_id__shipping_status="cart",
+        ).exclude(
+            order_id=order
+        ).delete()
+
+        # submit Order
+        order.shipping_address = shipping_address
+        order.shipping_status = "pending"
+        order.save(update_fields=["shipping_address", "shipping_status"])
+
+        # mark Item as sold
+        Item.objects.filter(
+            pk__in=purchased_items
+        ).update(for_sale=False)
+
+        # delete empty carts belonging to other users
+        Orders.objects.annotate(
+            item_count=Count("order_item")
+        ).filter(
+            shipping_status="cart",
+            item_count=0
+        ).exclude( # don't delete the current buyer's Order 
+            pk=order.pk
+        ).delete()
 
     messages.success(request, "Your order has been placed!")
 

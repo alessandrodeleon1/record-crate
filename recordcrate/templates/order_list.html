@@ -3,7 +3,8 @@
 {% block content %}
 <nav class="breadcrumb">
   <a href="{% url 'recordcrate:homepage' %}">Home</a> &rsaquo;
-  <span>Orders of User #{{ profile_user.user_id }}</span>
+  {% comment %} <span>Orders of User #{{ profile_user.user_id }}</span> {% endcomment %}
+  Orders
 </nav>
 
 <section class="orders">

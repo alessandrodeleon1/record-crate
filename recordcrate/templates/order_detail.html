@@ -3,7 +3,9 @@
 {% block content %}
 <nav class="breadcrumb">
   <a href="{% url 'recordcrate:homepage' %}">Home</a> &rsaquo;
-  <a href="{% url 'recordcrate:order_list' profile_user.pk %}">Orders</a>
+  <a href="{% url 'recordcrate:order_list' profile_user.pk %}">Orders</a> &rsaquo;
+  {% comment %} <a href="{% url 'recordcrate:order_detail' profile_user.pk order.order_id %}">Order #{{ order.order_id }}</a> {% endcomment %}
+  Order #{{ order.order_id }}
 </nav>
 <section>
 
@@ -34,7 +36,7 @@
   {% endif %}
 
 {% elif order.shipping_status == "pending" %}
-  <p>Your order has been placed and is pending!</p>
+  <p>Your order has been placed and is pending.</p>
 {% endif %}
 
 {% if line_items %}
